@@ -2,7 +2,7 @@ import React from 'react';
 import { Header } from './Header';
 import { Menu } from './Menu';
 
-function Home() {
+function index() {
   return (
     <div>
       <Header />
@@ -25,4 +25,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default index;
