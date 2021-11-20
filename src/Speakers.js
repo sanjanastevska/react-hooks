@@ -4,6 +4,7 @@ import React, {
   useContext,
   useReducer,
   useCallback,
+  useMemo,
 } from 'react';
 
 import { Header } from './Header';
@@ -46,17 +47,9 @@ const Speakers = ({}) => {
     };
   }, []);
 
-  const handleChangeSaturday = () => {
-    setSpeakingSaturday(!speakingSaturday);
-  };
-
-  const handleChangeSunday = () => {
-    setSpeakingSunday(!speakingSunday);
-  };
-
-  const speakerListFiltered = isLoading
-    ? []
-    : speakerList
+  const newSpeakerList = useMemo(
+    () =>
+      speakerList
         .filter(
           ({ sat, sun }) =>
             (speakingSaturday && sat) || (speakingSunday && sun),
@@ -69,7 +62,19 @@ const Speakers = ({}) => {
             return 1;
           }
           return 0;
-        });
+        }),
+    [speakingSaturday, speakingSunday, speakerList],
+  );
+
+  const handleChangeSaturday = () => {
+    setSpeakingSaturday(!speakingSaturday);
+  };
+
+  const handleChangeSunday = () => {
+    setSpeakingSunday(!speakingSunday);
+  };
+
+  const speakerListFiltered = isLoading ? [] : newSpeakerList;
 
   const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
