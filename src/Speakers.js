@@ -6,46 +6,19 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-
 import { Header } from './Header';
 import { Menu } from './Menu';
-import SpeakersData from './SpeakersData';
 import SpeakerDetail from './SpeakerDetail';
 import { ConfigContext } from './App';
-import speakersReducer from './speakersReducer';
+import useSpeakerDataManager from './useSpeakerDataManager';
 
 const Speakers = ({}) => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
-
-  // const [speakerList, setSpeakerList] = useState([]);
-  const [speakerList, dispatch] = useReducer(speakersReducer, []);
-
-  const [isLoading, setIsLoading] = useState(true);
-
   const context = useContext(ConfigContext);
 
-  useEffect(() => {
-    setIsLoading(true);
-    new Promise(function (resolve) {
-      setTimeout(function () {
-        resolve();
-      }, 1000);
-    }).then(() => {
-      setIsLoading(false);
-      const speakerListServerFilter = SpeakersData.filter(({ sat, sun }) => {
-        return (speakingSaturday && sat) || (speakingSunday && sun);
-      });
-      dispatch({
-        type: 'setSpeakerList',
-        data: speakerListServerFilter,
-      });
-    });
-
-    return () => {
-      console.log('cleanup');
-    };
-  }, []);
+  const { isLoading, speakerList, toggleSpeakerFavorite } =
+    useSpeakerDataManager();
 
   const newSpeakerList = useMemo(
     () =>
@@ -76,13 +49,9 @@ const Speakers = ({}) => {
 
   const speakerListFiltered = isLoading ? [] : newSpeakerList;
 
-  const heartFavoriteHandler = useCallback((e, favoriteValue) => {
+  const heartFavoriteHandler = useCallback((e, speakerRec) => {
     e.preventDefault();
-    const sessionId = parseInt(e.target.attributes['data-sessionid'].value);
-    dispatch({
-      type: favoriteValue === true ? 'favorite' : 'unfavorite',
-      sessionId,
-    });
+    toggleSpeakerFavorite(speakerRec);
   }, []);
 
   if (isLoading) return <div>Loading...</div>;
@@ -122,21 +91,15 @@ const Speakers = ({}) => {
         </div>
         <div className="row">
           <div className="card-deck">
-            {speakerListFiltered.map(
-              ({ id, firstName, lastName, bio, favorite }) => {
-                return (
-                  <SpeakerDetail
-                    key={id}
-                    id={id}
-                    favorite={favorite}
-                    firstName={firstName}
-                    lastName={lastName}
-                    bio={bio}
-                    onHeartFavoriteHandler={heartFavoriteHandler}
-                  />
-                );
-              },
-            )}
+            {speakerListFiltered.map((speakerRec) => {
+              return (
+                <SpeakerDetail
+                  key={speakerRec.id}
+                  speakerRec={speakerRec}
+                  onHeartFavoriteHandler={heartFavoriteHandler}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
