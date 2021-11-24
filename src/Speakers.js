@@ -10,7 +10,7 @@ const Speakers = ({}) => {
   const [speakingSunday, setSpeakingSunday] = useState(true);
   const context = useContext(ConfigContext);
 
-  const { isLoading, speakerList, toggleSpeakerFavorite } =
+  const { isLoading, speakerList, toggleSpeakerFavorite, hasErrored, error } =
     useContext(GlobalContext);
 
   const newSpeakerList = useMemo(
@@ -41,6 +41,8 @@ const Speakers = ({}) => {
   };
 
   const speakerListFiltered = isLoading ? [] : newSpeakerList;
+
+  if (hasErrored === true) return <div>Error: {error.message}</div>;
 
   const heartFavoriteHandler = useCallback((e, speakerRec) => {
     e.preventDefault();
