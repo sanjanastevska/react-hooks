@@ -1,16 +1,9 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useReducer,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
 import { Header } from './Header';
 import { Menu } from './Menu';
 import SpeakerDetail from './SpeakerDetail';
 import { ConfigContext } from './App';
-import useSpeakerDataManager from './useSpeakerDataManager';
+import { GlobalContext } from './GlobalState';
 
 const Speakers = ({}) => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
@@ -18,7 +11,7 @@ const Speakers = ({}) => {
   const context = useContext(ConfigContext);
 
   const { isLoading, speakerList, toggleSpeakerFavorite } =
-    useSpeakerDataManager();
+    useContext(GlobalContext);
 
   const newSpeakerList = useMemo(
     () =>
